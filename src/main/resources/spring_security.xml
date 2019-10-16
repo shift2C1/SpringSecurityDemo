@@ -23,6 +23,8 @@
                              authentication-success-handler-ref="loginSuccess"
                              authentication-failure-handler-ref="loginFailure"
         ></security:form-login >
+
+        <security:logout invalidate-session="true" success-handler-ref="logoutSuccess" logout-url="/logout.do"></security:logout>
         <!--intercept-url 定义了一个权限控制的规则。
         pattern 属性表示我们将对哪些 url 进行权限控制，其也可以是一个正则表达式，如上的写法表示我们将对所有的 URL 进行权限控制；
         access 属性表示在请求对应的 URL 时需要什么权限，默认配置时它应该是一个以逗号分隔的角色列表，请求的用户只需拥有其中的一个角色就能成功访问对应的 URL。
@@ -33,10 +35,15 @@
         解决办法是我们需要给 “/login.jsp” 放行。通过指定 “/login.jsp” 的访问权限为 “IS_AUTHENTICATED_ANONYMOUSLY” 或 “ROLE_ANONYMOUS”-->
 
     </security:http>
+
+    <!--退出登录成功-->
+    <bean id="logoutSuccess" class="com.pipichao.test.TestLogoutSuccess"></bean>
     <!--认证成功处理器-->
     <bean id="loginSuccess" class="com.pipichao.test.TestLoginSuccess"></bean>
     <!--认证成功处理器-->
     <bean id="loginFailure" class="com.pipichao.test.TestLoginFailure"></bean>
+
+
     <!--认证管理器-->
     <security:authentication-manager>
         <!--认证提供者-->
