@@ -1,0 +1,52 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!--以上引入spring security 命名空每-->
+
+
+    <!--方法二 不拦截登录页面-->
+    <!--<security:http auto-config="true" security="none" pattern="/jsp/login.jsp">-->
+    <!--</security:http>-->
+    <security:http auto-config="true">
+        <!--方法一 不拦截登录页面-->
+        <security:intercept-url pattern="/jsp/login.jsp" access="IS_AUTHENTICATED_ANONYMOUSLY"></security:intercept-url>
+        <!--登录页处理方案-->
+        <security:form-login login-page="/jsp/login.jsp"
+                             login-processing-url="/login.do"
+                             username-parameter="username"
+                             password-parameter="password"
+                             authentication-success-handler-ref="loginSuccess"
+                             authentication-failure-handler-ref="loginFailure"
+        ></security:form-login >
+        <!--intercept-url 定义了一个权限控制的规则。
+        pattern 属性表示我们将对哪些 url 进行权限控制，其也可以是一个正则表达式，如上的写法表示我们将对所有的 URL 进行权限控制；
+        access 属性表示在请求对应的 URL 时需要什么权限，默认配置时它应该是一个以逗号分隔的角色列表，请求的用户只需拥有其中的一个角色就能成功访问对应的 URL。
+        这里的 “ROLE_USER” 表示请求的用户应当具有 ROLEUSER 角色。“ROLE” 前缀是一个提示 Spring 使用基于角色的检查的标记。-->
+        <security:intercept-url pattern="/**" access="ROLE_USER"></security:intercept-url>
+
+        <!--我们之前配置的是所有的请求都需要 ROLE_USER 权限，这意味着我们自定义的 “/login.jsp” 也需要该权限，这样就会形成一个死循环了。
+        解决办法是我们需要给 “/login.jsp” 放行。通过指定 “/login.jsp” 的访问权限为 “IS_AUTHENTICATED_ANONYMOUSLY” 或 “ROLE_ANONYMOUS”-->
+
+    </security:http>
+    <!--认证成功处理器-->
+    <bean id="loginSuccess" class="com.pipichao.test.TestLoginSuccess"></bean>
+    <!--认证成功处理器-->
+    <bean id="loginFailure" class="com.pipichao.test.TestLoginFailure"></bean>
+    <!--认证管理器-->
+    <security:authentication-manager>
+        <!--认证提供者-->
+        <security:authentication-provider>
+            <!--properties="classpath:authoritied.properties"-->
+            <security:user-service >
+                <!--authorities:指定权限-->
+                <security:user name="user" password="user" authorities="ROLE_USER"></security:user>
+                <security:user name="admin" password="admin" authorities="ROLE_USER,ROLE_ADMIN"></security:user>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+</beans>
