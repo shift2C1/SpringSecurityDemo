@@ -29,11 +29,16 @@
         pattern 属性表示我们将对哪些 url 进行权限控制，其也可以是一个正则表达式，如上的写法表示我们将对所有的 URL 进行权限控制；
         access 属性表示在请求对应的 URL 时需要什么权限，默认配置时它应该是一个以逗号分隔的角色列表，请求的用户只需拥有其中的一个角色就能成功访问对应的 URL。
         这里的 “ROLE_USER” 表示请求的用户应当具有 ROLEUSER 角色。“ROLE” 前缀是一个提示 Spring 使用基于角色的检查的标记。-->
-        <security:intercept-url pattern="/**" access="ROLE_USER"></security:intercept-url>
+        <!--配置协议 为http 或者 https-->
+        <security:intercept-url pattern="/**" access="ROLE_USER" requires-channel="http"></security:intercept-url>
 
         <!--我们之前配置的是所有的请求都需要 ROLE_USER 权限，这意味着我们自定义的 “/login.jsp” 也需要该权限，这样就会形成一个死循环了。
         解决办法是我们需要给 “/login.jsp” 放行。通过指定 “/login.jsp” 的访问权限为 “IS_AUTHENTICATED_ANONYMOUSLY” 或 “ROLE_ANONYMOUS”-->
 
+        <!--&lt;!&ndash;http 端口由 80 映射到 65535 https 端口映射到65534&ndash;&gt;-->
+        <!--<security:port-mappings>-->
+            <!--<security:port-mapping http="65535" https="65534"/>-->
+        <!--</security:port-mappings>-->
     </security:http>
 
     <!--退出登录成功-->
