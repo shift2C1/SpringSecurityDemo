@@ -20,6 +20,6 @@ public class TestLoginSuccess  implements AuthenticationSuccessHandler {
         System.out.println(userDetails.getPassword());
         System.out.println(userDetails.getAuthorities());
         System.out.println("认证成功");
-        httpServletResponse.sendRedirect("/index.jsp");
+//        httpServletResponse.sendRedirect("/login.do");
     }
 }
