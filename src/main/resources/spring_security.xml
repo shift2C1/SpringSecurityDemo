@@ -61,11 +61,21 @@
 
 
     <!--***************************************************-->
-    <!--<security:authentication-manager alias="authenticationManager">-->
+    <security:authentication-manager alias="authenticationManager">
+        <!--user-service-ref="userDetailService"  ref 关联一个 或者 在标签里定义一个-->
+        <security:authentication-provider>
+            <security:jdbc-user-service data-source-ref="dataSource"
+                                        users-by-username-query="select username, password, enabled from users where username=?"
+                                        authorities-by-username-query="select username, authority from authorities where username=?"
+                                        group-authorities-by-username-query="select g.id, g.group_name, ga.authority
+                                                                            from groups g, groups_members gm, groups_authorities ga
+                                                                            where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"
+            ></security:jdbc-user-service>
+        </security:authentication-provider>
         <!--<security:authentication-provider user-service-ref="userDetailService">-->
-            <!--&lt;!&ndash;<security:jdbc-user-service data-source-ref="dataSource"></security:jdbc-user-service>&ndash;&gt;-->
+
         <!--</security:authentication-provider>-->
-    <!--</security:authentication-manager>-->
+    </security:authentication-manager>
     <!--<bean id="userDetailService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">-->
         <!--&lt;!&ndash;<property name="dataSource" ref="dataSource"></property>&ndash;&gt;-->
         <!--&lt;!&ndash;- 根据 username 查询用户信息&ndash;&gt;-->
@@ -77,8 +87,14 @@
                   <!--value="select g.id, g.group_name, ga.authority-->
                   <!--from groups g, groups_members gm, groups_authorities ga-->
                   <!--where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"></property>-->
+        <!--<property name="dataSource" value="dataSource"></property>-->
     <!--</bean>-->
-    <!--<bean id="dataSource" class="com.mysql.cj.jdbc.Driver">-->
-
-    <!--</bean>-->
+    <!--配置数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="root123"></property>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+        <!--根据需要添加其他配置-->
+    </bean>
 </beans>
