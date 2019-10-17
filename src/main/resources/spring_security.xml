@@ -63,32 +63,39 @@
     <!--***************************************************-->
     <security:authentication-manager alias="authenticationManager">
         <!--user-service-ref="userDetailService"  ref 关联一个 或者 在标签里定义一个-->
+        <!--认证提供者1-->
         <security:authentication-provider>
             <security:jdbc-user-service data-source-ref="dataSource"
                                         users-by-username-query="select username, password, enabled from users where username=?"
                                         authorities-by-username-query="select username, authority from authorities where username=?"
-                                        group-authorities-by-username-query="select g.id, g.group_name, ga.authority
-                                                                            from groups g, groups_members gm, groups_authorities ga
-                                                                            where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"
-            ></security:jdbc-user-service>
-        </security:authentication-provider>
-        <!--<security:authentication-provider user-service-ref="userDetailService">-->
 
-        <!--</security:authentication-provider>-->
+            ></security:jdbc-user-service>
+            <!--group-authorities-by-username-query="select g.id, g.group_name, ga.authority
+                                                                            from groups g, groups_members gm, groups_authorities ga
+
+                                                                            where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"-->
+        </security:authentication-provider>
+        <!--认证提供者2-->
+        <security:authentication-provider user-service-ref="userDetailService"></security:authentication-provider>
     </security:authentication-manager>
-    <!--<bean id="userDetailService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">-->
-        <!--&lt;!&ndash;<property name="dataSource" ref="dataSource"></property>&ndash;&gt;-->
-        <!--&lt;!&ndash;- 根据 username 查询用户信息&ndash;&gt;-->
-        <!--<property name="usersByUsernameQuery" value="select username, password, enabled from users where username=?"></property>-->
-        <!--&lt;!&ndash;根据 username 查询用户权限信息&ndash;&gt;-->
-        <!--<property name="authoritiesByUsernameQuery" value="select username, authority from authorities where username=?"></property>-->
-        <!--&lt;!&ndash;根据 username 查询用户组权限&ndash;&gt;-->
-        <!--<property name="groupAuthoritiesByUsernameQuery"-->
-                  <!--value="select g.id, g.group_name, ga.authority-->
-                  <!--from groups g, groups_members gm, groups_authorities ga-->
-                  <!--where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"></property>-->
-        <!--<property name="dataSource" value="dataSource"></property>-->
-    <!--</bean>-->
+    <bean id="userDetailService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+        <!--<property name="dataSource" ref="dataSource"></property>-->
+        <!--- 根据 username 查询用户信息-->
+        <property name="usersByUsernameQuery" value="select username, password, enabled from users where username=?"></property>
+        <!--根据 username 查询用户权限信息-->
+        <property name="authoritiesByUsernameQuery" value="select username, authority from authorities where username=?"></property>
+
+        <!--开启用户组权限-->
+        <property name="enableGroups" value="true"></property>
+        <!--根据 username 查询用户组权限-->
+        <property name="groupAuthoritiesByUsernameQuery"
+                  value="select g.id, g.group_name, ga.authority
+                  from groups g, groups_members gm, groups_authorities ga
+                  where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"></property>
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="rolePrefix" value="ROLE/"></property>
+        <property name="jdbcTemplate" ref="myJdbcTemplate"></property>
+    </bean>
     <!--配置数据源-->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="url" value="jdbc:mysql://localhost:3306/test?serverTimezone=UTC"></property>
@@ -96,5 +103,8 @@
         <property name="password" value="root123"></property>
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
         <!--根据需要添加其他配置-->
+    </bean>
+    <bean id="myJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" >
+        <property name="dataSource" ref="dataSource"></property>
     </bean>
 </beans>
