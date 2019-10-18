@@ -81,7 +81,7 @@
                                                                             where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"-->
         </security:authentication-provider>
         <!--认证提供者2-->
-        <security:authentication-provider user-service-ref="userDetailService"></security:authentication-provider>
+        <!--<security:authentication-provider user-service-ref="userDetailService"></security:authentication-provider>-->
     </security:authentication-manager>
     <bean id="userDetailService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
         <!--<property name="dataSource" ref="dataSource"></property>-->
@@ -91,14 +91,14 @@
         <property name="authoritiesByUsernameQuery" value="select username, authority from authorities where username=?"></property>
 
         <!--开启用户组权限-->
-        <property name="enableGroups" value="true"></property>
+        <!--<property name="enableGroups" value="true"></property>-->
         <!--根据 username 查询用户组权限-->
         <property name="groupAuthoritiesByUsernameQuery"
                   value="select g.id, g.group_name, ga.authority
                   from groups g, groups_members gm, groups_authorities ga
                   where gm.username=? and g.id=ga.group_id and g.id=gm.group_id"></property>
         <property name="dataSource" ref="dataSource"></property>
-        <property name="rolePrefix" value="ROLE/"></property>
+        <!--<property name="rolePrefix" value="ROLE"></property>-->
         <property name="jdbcTemplate" ref="myJdbcTemplate"></property>
     </bean>
     <!--配置数据源-->
