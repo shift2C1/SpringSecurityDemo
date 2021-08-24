@@ -1,0 +1,28 @@
+# maven ignore
+overlays/
+target/
+*.jar
+!.mvn/wrapper/*
+*.war
+*.zip
+*.tar
+*.tar.gz
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+
+# vs code ignore
+.vscode/
+.factorypath
+
+# system ignore
+.DS_Store
+Thumbs.db
