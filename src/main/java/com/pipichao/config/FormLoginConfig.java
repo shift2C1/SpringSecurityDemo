@@ -48,7 +48,7 @@ public class FormLoginConfig extends WebSecurityConfigurerAdapter {
          * filterchainproxy 代理 securityfilterchain
          */
 
-        // TODO: 2023/7/17 未完成，继续努力 
+        // TODO: 2023/7/17 未完成，继续努力
 
         web.addSecurityFilterChainBuilder(securityfilterchain1())
                 .addSecurityFilterChainBuilder(securityfilterchain2());
