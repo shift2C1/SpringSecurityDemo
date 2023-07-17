@@ -16,7 +16,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
  * @Author wangchao
  * @Date 2021/8/23
  */
-@Configuration
+//@Configuration
 
 //    @EnableWebSecurity
 public class FormAuthenticationConfig  {
