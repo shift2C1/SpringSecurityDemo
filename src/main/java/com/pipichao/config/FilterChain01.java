@@ -13,6 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -33,7 +34,10 @@ public class FilterChain01 extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/*.html");
+        web.ignoring()
+                .antMatchers("/*.html")
+                .antMatchers("/*.css")
+                .antMatchers("/*.js");
     }
 
     @Override
@@ -58,15 +62,23 @@ public class FilterChain01 extends WebSecurityConfigurerAdapter {
                         httpServletResponse.getWriter().write("403...");
                     }
                 })
-//                .authenticationEntryPoint(new AuthenticationEntryPoint() {
-//                    @Override
-//                    public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
-////                        httpServletResponse.getWriter().write("401...");
-//                        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-////                        httpServletResponse.getWriter().write("401...");
-//                        httpServletResponse.sendRedirect("/login.html");
-//                    }
-//                })
+                .authenticationEntryPoint(new AuthenticationEntryPoint() {
+                    @Override
+                    public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
+
+                        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        /**
+                         * 前后端不分离：跳到登录页
+                         * 401->responce header 里location就是需要重定向的url
+                         */
+//
+                        //httpServletResponse.sendRedirect("/login.html");
+                        /**
+                         * 前后端不分离，返回json字符串
+                         */
+                        httpServletResponse.getWriter().write("401...");
+                    }
+                })
                 .and()
                 .antMatcher(contextPath+"/**")
                 .authorizeRequests()
@@ -74,7 +86,10 @@ public class FilterChain01 extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/static/login.html")
+                /**
+                 * 测试用，现在都是前后端分离
+                 */
+//                .loginPage("/login.html")
                 .loginProcessingUrl(contextPath+"/01login")
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
