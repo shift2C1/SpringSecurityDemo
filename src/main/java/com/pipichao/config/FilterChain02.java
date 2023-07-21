@@ -2,6 +2,7 @@ package com.pipichao.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -66,5 +67,18 @@ public class FilterChain02 extends WebSecurityConfigurerAdapter {
                 .userDetailsService(huairen)
 
         ;
+    }
+
+
+    /**
+     *
+     * 如果配置了自己的全局 parent AuthenticationManager 则由其他配置类注入spring的全局paren在这个登录流程过滤器链里不生效
+     */
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+        InMemoryUserDetailsManager filterChain02SelfGlobalUserDetailservice=new InMemoryUserDetailsManager();
+        filterChain02SelfGlobalUserDetailservice.createUser(User.withUsername("rulai").password("{noop}111").roles("rulai").build());
+        auth.userDetailsService(filterChain02SelfGlobalUserDetailservice);
     }
 }
