@@ -21,8 +21,8 @@ import java.io.IOException;
  * @Author: wangchao
  * @date: 2023/7/21 10:25
  **/
-@Configuration
-@Order(101)
+//@Configuration
+//@Order(101)
 public class FilterChain02 extends WebSecurityConfigurerAdapter {
     private final String contextPath="/xiyouji";
     @Override

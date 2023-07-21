@@ -3,14 +3,17 @@ package com.pipichao.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -27,6 +30,12 @@ import java.io.IOException;
 @Order(100)
 public class FilterChain01 extends WebSecurityConfigurerAdapter {
     private final String contextPath="/sanguo";
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/*.html");
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         InMemoryUserDetailsManager shuguo=new InMemoryUserDetailsManager();
@@ -39,11 +48,33 @@ public class FilterChain01 extends WebSecurityConfigurerAdapter {
         weiguo.createUser(User.withUsername("dianwei").password("{noop}111").roles("wujiang").build());
         weiguo.createUser(User.withUsername("xunyu").password("{noop}111").roles("junshi").build());
 
-        http.antMatcher(contextPath+"/*")
+        http
+
+                .exceptionHandling()
+                .accessDeniedHandler(new AccessDeniedHandler() {
+                    @Override
+                    public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AccessDeniedException e) throws IOException, ServletException {
+                        httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        httpServletResponse.getWriter().write("403...");
+                    }
+                })
+//                .authenticationEntryPoint(new AuthenticationEntryPoint() {
+//                    @Override
+//                    public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
+////                        httpServletResponse.getWriter().write("401...");
+//                        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+////                        httpServletResponse.getWriter().write("401...");
+//                        httpServletResponse.sendRedirect("/login.html");
+//                    }
+//                })
+                .and()
+                .antMatcher(contextPath+"/**")
                 .authorizeRequests()
+                .antMatchers(contextPath+"/zhugong/getData").hasRole("zhugong")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                .loginPage("/static/login.html")
                 .loginProcessingUrl(contextPath+"/01login")
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
@@ -87,4 +118,18 @@ public class FilterChain01 extends WebSecurityConfigurerAdapter {
         userDetailsManager.createUser(User.withUsername("hanxiedi").password("{noop}111").roles("huangdi").build());
         return userDetailsManager;
     }
+
+    /**
+     *
+     * 自己登录流程的 parent AuthenticationManager
+     * @param auth
+     * @throws Exception
+     */
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//
+//        InMemoryUserDetailsManager userDetailsManager=new InMemoryUserDetailsManager();
+//        userDetailsManager.createUser(User.withUsername("hanxiedi").password("{noop}111").roles("huangdi").build());
+//        auth.userDetailsService(userDetailsManager);
+//    }
 }

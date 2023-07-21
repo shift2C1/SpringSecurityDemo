@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/sanguo")
 public class TestController {
 
     //@RequestMapping("/login.do")
@@ -13,7 +13,7 @@ public class TestController {
         System.out.println("登录成功");
         return "登录成功";
     }
-    @GetMapping("/getData")
+    @GetMapping("/zhugong/getData")
     public String getData(){
         return "获取到的数据";
     }
