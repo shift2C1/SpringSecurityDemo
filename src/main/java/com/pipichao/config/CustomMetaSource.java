@@ -34,6 +34,11 @@ public class CustomMetaSource implements FilterInvocationSecurityMetadataSource 
             /**
              * 由于inmemery userservice配置的是用角色管理的权限
              */
+            /**
+             * 如果用户绑定了角色，那么角色最终一定要转化为权限
+             * 用户所配置的和首受限制资源所需要的保持一致
+             *
+             */
             return SecurityConfig.createList("ROLE_zhuguan");
         }
         return null;
