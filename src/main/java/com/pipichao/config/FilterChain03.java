@@ -93,7 +93,10 @@ public class FilterChain03 extends WebSecurityConfigurerAdapter {
                 .and()
                 .antMatcher(contextPath+"/**")
                 .authorizeRequests()
-                .antMatchers(contextPath+"/zhugong/getData").hasRole("zhugong")
+                /**
+                 * 权限配置到数据库了，不需要在此写死了
+                 */
+//                .antMatchers(contextPath+"/zhuguan/getData").hasRole("zhuguan")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -101,18 +104,18 @@ public class FilterChain03 extends WebSecurityConfigurerAdapter {
                  * 测试用，现在都是前后端分离
                  */
 //                .loginPage("/login.html")
-                .loginProcessingUrl(contextPath+"/01login")
+                .loginProcessingUrl(contextPath+"/03login")
                 .successHandler(new AuthenticationSuccessHandler() {
                     @Override
                     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-                        httpServletResponse.getWriter().write("01login success");
+                        httpServletResponse.getWriter().write("03login success");
                     }
                 })
                 .failureHandler(new AuthenticationFailureHandler() {
                     @Override
                     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
                         e.printStackTrace();
-                        httpServletResponse.getWriter().write("01login failed");
+                        httpServletResponse.getWriter().write("03login failed");
                     }
                 })
                 .and()

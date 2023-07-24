@@ -11,41 +11,70 @@ import java.util.*;
 /**
  * @Author: wangchao
  * @date: 2023/7/24 10:45
- *
+ * <p>
  * 自定义受保护安全对象数据全
  **/
 public class CustomMetaSource implements FilterInvocationSecurityMetadataSource {
-    private AntPathMatcher antPathMatcher=new AntPathMatcher();
+    private AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-        List<String> collection=new ArrayList<>();
         if (o instanceof FilterInvocation) {
-            FilterInvocation filterInvocation = (FilterInvocation) o;
-            StringBuffer requestURL = filterInvocation.getHttpRequest().getRequestURL();
-            List<Map<String, String>> list = getInvocationPermission();
-            for (Map<String, String> permissionmap : list) {
-                permissionmap.forEach((patten,role)->{
-                    if (antPathMatcher.match(patten,requestURL.toString())) {
-                        collection.add(role);
-                    }
-                });
-            }
+//            FilterInvocation filterInvocation = (FilterInvocation) o;
+//            String requestURL = filterInvocation.getHttpRequest().getRequestURI();
+//            List<Permission> list = getInvocationPermission();
+//            for (Permission permissionmap : list) {
+//                if (antPathMatcher.match(permissionmap.getPartten(), requestURL)) {
+//                    return SecurityConfig.createList(permissionmap.getRole());
+//                }
+//            }
+            /**
+             * 先假请求需要这个角色
+             */
+            return SecurityConfig.createList("zhuguan");
         }
-        return SecurityConfig.createList(collection.toArray(new String[0]));
+        return null;
     }
 
     /**
      * 模拟从数据库获取到的所需权限
+     *
      * @return
      */
-    private List<Map<String,String>> getInvocationPermission(){
-        Map<String,String> map=new HashMap<>();
-        map.put("/zhuguan/**","zhuguan");
-        List<Map<String,String>> list=new ArrayList<>();
-        list.add(map);
+    private List<Permission> getInvocationPermission() {
+
+        Permission zhuguan = new Permission("/zhuguan/**", "zhuguan");
+        List<Permission> list = new ArrayList<>();
+        list.add(zhuguan);
         return list;
     }
+
+    class Permission {
+        private String partten;
+        private String role;
+
+        public Permission(String partten, String role) {
+            this.partten = partten;
+            this.role = role;
+        }
+
+        public String getPartten() {
+            return partten;
+        }
+
+        public void setPartten(String partten) {
+            this.partten = partten;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+    }
+
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
         return null;
